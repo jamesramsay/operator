@@ -2,37 +2,28 @@
 
 > Analyze and backup your Intercom data
 
-Analyze Intercom data over time using SQL. Operator helps you capture regular (daily, weekly etc) snapshots of your Intercom data which can then be queried.
+---
 
-## Todo
+Analyze Intercom data over time using SQL with:
 
-- implement lambda function to dump the data
-- cloudformation to deploy the lambda function
-- cloudformation to create S3 bucket
-- handle failures (retry/email?)
+- time series data about segment and tag membership
+- query using SQL
+- no maintenance of webservers or databases
+- all data stored as [`ndjson` (newline delimited json)](http://ndjson.org) in S3
 
-## AWS
+---
 
-Resources required:
+## What is Operator?
 
-- AWS bucket for each intercom instance (e.g. `operator-INTERCOM_APPID`)
-- Lambda function
+Operator is a package you can upload to [AWS Lambda](https://aws.amazon.com/lambda/) that is triggered on a schedule to collect segment and tag information about users and companies from [Intercom](https://intercom.com), allowing you to analyse usage in new ways.
 
-Example IAM Policy:
+## Prerequisites
 
-```
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": "s3:*",
-            "Resource": [
-                "arn:aws:s3:::operator-XXXXXXXX",
-                "arn:aws:s3:::operator-XXXXXXXX/*"
-            ]
-        }
-    ]
-}
-```
+- Intercom [Access Token](https://developers.intercom.com/reference#personal-access-tokens-1)
+- [Amazon AWS account](https://portal.aws.amazon.com/gp/aws/developer/registration/index.html)
+
+## Installation
+
+Todo
+
 
