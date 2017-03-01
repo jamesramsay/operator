@@ -16,7 +16,7 @@ var INTERCOM_APPID = process.env.INTERCOM_APPID || '';
 var INTERCOM_ACCESSTOKEN = process.env.INTERCOM_ACCESSTOKEN || '';
 var S3BUCKET = process.env.S3BUCKET || '';
 
-var HIVE_DATE_FORMAT = 'yyyy-mm-dd hh:mm:ss';
+var HIVE_DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 var OBSERVED_AT = moment();
 var _observedAt = OBSERVED_AT.format(HIVE_DATE_FORMAT);
 
