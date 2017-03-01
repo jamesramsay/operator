@@ -12,9 +12,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "v": "node -p 'require(\"./package.json\").version'",
-    "publish": "npm run pkg:put",
-    "pkg:zip": "rm -f lambda.zip && zip -qyr lambda.zip . -x@.lambdaignore",
-    "pkg:put": "npm run pkg:zip && aws s3api put-object --bucket intercom-operator --key fn/operator-build-$(npm run -s v).zip --body lambda.zip --acl public-read"
+    "publish": "npm run pkg:zip && ./publish.sh",
+    "pkg:zip": "rm -f lambda.zip && zip -qyr lambda.zip . -x@.lambdaignore"
   },
   "dependencies": {
     "aws-sdk": "^2.9.0",
