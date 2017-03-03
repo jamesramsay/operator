@@ -18,7 +18,7 @@ var S3BUCKET = process.env.S3BUCKET || '';
 
 var HIVE_DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 var OBSERVED_AT = moment();
-var _observedAt = OBSERVED_AT.format(HIVE_DATE_FORMAT);
+var _observed_at = OBSERVED_AT.format(HIVE_DATE_FORMAT);
 
 module.exports = dump;
 
@@ -70,7 +70,7 @@ function write(table, content) {
 function createJoinTable(key, users) {
   var relationships = users.map(function(u) {
     return _.get(u, `${key}s.${key}s`).map(function(r) {
-      return { userId: u.id, [`${key}Id`]: r.id };
+      return { user_id: u.id, [`${key}_id`]: r.id };
     });
   });
   return _.flatten(relationships);
@@ -80,7 +80,7 @@ function createJoinTable(key, users) {
 function toNDJson(collection) {
   return collection.map(function(item) {
     // Extend each record with the date-time it was observed
-    return JSON.stringify(extend(item, { _observedAt: _observedAt }));
+    return JSON.stringify(extend(item, { _observed_at: _observed_at }));
   }).join('\n');
 }
 
