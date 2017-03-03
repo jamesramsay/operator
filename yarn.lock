@@ -74,6 +74,10 @@ bl@~1.1.2:
   dependencies:
     readable-stream "~2.0.5"
 
+bluebird-retry@^0.10.1:
+  version "0.10.1"
+  resolved "https://registry.yarnpkg.com/bluebird-retry/-/bluebird-retry-0.10.1.tgz#cdf76b01d4a6dd4fec4e2c84360a8a09007f67da"
+
 bluebird@^3.3.4, bluebird@^3.4.7:
   version "3.4.7"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.4.7.tgz#f72d760be09b7f76d08ed8fae98b289a8d05fab3"
