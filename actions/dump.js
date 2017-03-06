@@ -27,7 +27,7 @@ var TO_SINGULAR = {
 
 // Timestamp formatting
 var HIVE_DATE_FORMAT = 'YYYY-MM-DD HH:mm:ss';
-var S3_DATE_FORMAT = 'YYYYMMDD-HHmm';
+var S3_DATE_FORMAT = 'YYYYMMDD_HHmm';
 var OBSERVED_AT = moment();
 var _observed_at = OBSERVED_AT.format(HIVE_DATE_FORMAT);
 
@@ -156,7 +156,7 @@ function uploadSnapshot(data) {
 
   return Promise.map(pExpiredObjects, deleteObject)
     .then(function() { return uploadObject(key, items); })
-    .then(function() { return copyObject(`${S3BUCKET}/${key}`, `historical-${key}`); })
+    .then(function() { return copyObject(`${S3BUCKET}/${key}`, `historical_${key}`); })
     .then(function() { return uploadRelationships(data); });
 }
 
