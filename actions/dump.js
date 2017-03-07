@@ -79,7 +79,9 @@ function scrollAll(resource) {
 }
 
 // Get all items for paged resources
-function listAll(resource, filter, pages, memo = []) {
+function listAll(resource, filter, pages, memo) {
+  if (!memo) memo = [];
+
   function next(res) {
     if (res.pages) return listAll(resource, filter, res.pages, memo.concat(res.body[resource]));
     return { resource: resource, items: memo.concat(res.body[resource]) };
