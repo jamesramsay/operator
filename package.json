@@ -13,7 +13,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "v": "node -p 'require(\"./package.json\").version'",
     "publish": "npm run pkg:zip && ./publish.sh",
-    "pkg:zip": "rm -f lambda.zip && zip -qyr lambda.zip . -x@.lambdaignore"
+    "pkg:zip": "rm -f lambda.zip && zip -qyr lambda.zip . -x@.lambdaignore",
+    "lambda:update": "npm run pkg:zip && aws lambda update-function-code --function-name ${STACK:-operator}-dump --zip-file fileb://lambda.zip",
+    "stack:update": "aws cloudformation update-stack --stack-name ${STACK:-operator} --template-body file://operator.template --capabilities CAPABILITY_IAM --parameters ParameterKey=Version,ParameterValue=$(npm run -s v) ParameterKey=IntercomAccessToken,UsePreviousValue=True ParameterKey=BucketName,UsePreviousValue=True",
+    "stack:status": "aws cloudformation describe-stacks --stack-name ${STACK:-operator} --query 'Stacks[0].StackStatus'"
   },
   "dependencies": {
     "aws-sdk": "^2.9.0",

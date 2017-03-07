@@ -34,11 +34,13 @@ var _observed_at = OBSERVED_AT.format(HIVE_DATE_FORMAT);
 
 module.exports = dump;
 
-var client = new Intercom.Client({ token: INTERCOM_ACCESSTOKEN });
+var client;
 
 function dump(event, context, cb) {
   if (!INTERCOM_ACCESSTOKEN) return cb('Intercom access token is required to retrieve data.');
   if (!S3BUCKET) return cb('Amazon S3 bucket is required to write data.');
+
+  client = new Intercom.Client({ token: INTERCOM_ACCESSTOKEN });
 
   // 1. snapshot list resources
   listResources().each(uploadSnapshot)
