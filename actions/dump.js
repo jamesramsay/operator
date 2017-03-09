@@ -128,37 +128,17 @@ function copyObject(source, target) {
   });
 }
 
-function deleteObject(key) {
-  return new Promise(function(resolve, reject) {
-    s3.deleteObject({ Bucket: S3BUCKET, Key: key }, function(err, data) {
-      if (err) return reject(err);
-      console.log(`Deleted ${key}`);
-      return resolve(key);
-    });
-  });
-}
 
-function listObjects(prefix) {
-  return new Promise(function(resolve, reject) {
-    s3.listObjects({ Bucket: S3BUCKET, Prefix: prefix }, function(err, data) {
-      if (err) return reject(err);
-      return resolve(data.Contents.map(function (o) { return o.Key; }));
-    });
-  });
-}
-
-
-// Static-ish resources, like users, are more easily joined to time series data if only distinct records exist
 function uploadSnapshot(data) {
   var resource = data.resource;
   var items = data.items;
-  var key = `${resource}/${OBSERVED_AT.format(S3_DATE_FORMAT)}.ndjson.gz`;
+  // Overwrite every run, allowing convenient joins agains the latest data
+  var key = `${resource}/${resource}.ndjson.gz`;
+  // Store historical snapshot from each run
+  var historicalKey = `historical_${resource}/${OBSERVED_AT.format(S3_DATE_FORMAT)}.ndjson.gz`;
 
-  var pExpiredObjects = listObjects(resource);
-
-  return Promise.map(pExpiredObjects, deleteObject)
-    .then(function() { return uploadObject(key, items); })
-    .then(function() { return copyObject(`${S3BUCKET}/${key}`, `historical_${key}`); })
+  return uploadObject(key, items)
+    .then(function() { return copyObject(`${S3BUCKET}/${key}`, `${historicalKey}`); })
     .then(function() { return uploadRelationships(data); });
 }
 
