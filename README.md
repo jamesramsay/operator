@@ -1,6 +1,9 @@
 # Operator
 
-> Analyze and backup your Intercom data
+> Analyze your Intercom data using SQL
+
+[![Launch CloudFormation
+Stack](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=operator&templateURL=https://operator-stack.s3.amazonaws.com/templates/operator.template)
 
 ---
 

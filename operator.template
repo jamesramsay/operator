@@ -1,0 +1,118 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Operator function and supporting services (see github.com/jamesramsay/operator for documentation)",
+  "Parameters": {
+    "Version": {
+      "Description": "Operator version",
+      "Type": "String",
+      "Default": "0.0.5"
+    },
+    "IntercomAccessToken": {
+      "Description": "Intercom access token",
+      "Type": "String",
+      "Default": "",
+      "AllowedPattern": "^$|^[0-9a-zA-Z]{59}=$",
+      "ConstraintDescription": "Must be empty or a 60 char Intercom access token"
+    },
+    "BucketName": {
+      "Description": "S3 bucket for storing your Intercom data",
+      "Type": "String",
+      "Default": "intercom-APPID"
+    }
+  },
+  "Resources": {
+    "DumpLambda": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "FunctionName": {"Fn::Join": ["", [{"Ref": "AWS::StackName"}, "-dump"]]},
+        "Description": {"Fn::Join": ["", ["Operator dump function for stack: ", {"Ref": "AWS::StackName"}]]},
+        "Handler": "index.handler",
+        "MemorySize": "128",
+        "Timeout": "300",
+        "Role": {"Fn::GetAtt": ["LambdaExecution", "Arn"]},
+        "Code": {
+          "S3Bucket": {"Fn::Join": ["", ["operator-", {"Ref": "AWS::Region"}]]},
+          "S3Key": {"Fn::Join": ["", ["fn/operator-build-", {"Ref": "Version"}, ".zip"]]}
+        },
+        "Environment": { "Variables": {
+          "INTERCOM_ACCESSTOKEN": {"Ref": "IntercomAccessToken"},
+          "S3BUCKET": {"Ref": "BucketName"}
+        }},
+        "Runtime": "nodejs4.3"
+      }
+    },
+    "DumpOutput": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {"Ref": "BucketName"}
+      }
+    },
+    "DumpRule": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "Description": {"Fn::Join": ["", ["Operator dump function trigger for stack: ", {"Ref": "AWS::StackName"}]]},
+        "ScheduleExpression": "rate(1 day)",
+        "Targets": [{
+          "Id": "DumpScheduler",
+          "Arn": {"Fn::GetAtt": ["DumpLambda", "Arn"]}
+        }]
+      }
+    },
+    "LambdaInvoke": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {"Fn::GetAtt": ["DumpLambda", "Arn"]},
+        "Action": "lambda:InvokeFunction",
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {"Fn::GetAtt": ["DumpRule", "Arn"]}
+      }
+    },
+    "LambdaExecution": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": {
+            "Effect": "Allow",
+            "Principal": {"Service": "lambda.amazonaws.com"},
+            "Action": "sts:AssumeRole"
+          }
+        },
+        "Policies": [{
+          "PolicyName": "WriteLogs",
+          "PolicyDocument": {
+            "Statement": {
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": {"Fn::Join": ["", ["arn:aws:logs:*:*:log-group:/aws/lambda/", {"Ref": "AWS::StackName"}, "-*"]]}
+            }
+          }
+        },{
+          "PolicyName": "ReadWriteBucket",
+          "PolicyDocument": {
+            "Statement": {
+              "Effect": "Allow",
+              "Action": [
+                "s3:GetObject",
+                "s3:PutObject",
+                "s3:PutObjectAcl"
+              ],
+              "Resource": {"Fn::Join": ["", ["arn:aws:s3:::", {"Ref": "DumpOutput"}, "/*"]]}
+            }
+          }
+        }]
+      }
+    },
+    "ConfigUpdater": {
+      "Type": "Custom::ConfigUpdater",
+      "Properties": {
+        "ServiceToken": {"Fn::GetAtt": ["DumpLambda", "Arn"]},
+        "IntercomAccessToken": {"Ref": "IntercomAccessToken"},
+        "S3Bucket": {"Ref": "DumpOutput"}
+      }
+    }
+  }
+}
