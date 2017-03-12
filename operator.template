@@ -105,14 +105,6 @@
           }
         }]
       }
-    },
-    "ConfigUpdater": {
-      "Type": "Custom::ConfigUpdater",
-      "Properties": {
-        "ServiceToken": {"Fn::GetAtt": ["DumpLambda", "Arn"]},
-        "IntercomAccessToken": {"Ref": "IntercomAccessToken"},
-        "S3Bucket": {"Ref": "DumpOutput"}
-      }
     }
   }
 }
