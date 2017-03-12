@@ -5,7 +5,7 @@
     "Version": {
       "Description": "Operator version",
       "Type": "String",
-      "Default": "0.0.5"
+      "Default": "0.0.6"
     },
     "IntercomAccessToken": {
       "Description": "Intercom access token",
