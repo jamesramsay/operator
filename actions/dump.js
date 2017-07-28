@@ -60,7 +60,7 @@ function listResources() {
 
 function scrollResources() {
   // scrollAll IS mappable
-  return Promise.mapSeries(['users'], scrollAll); // TODO: add leads and companies
+  return Promise.mapSeries(['users', 'companies', 'leads'], scrollAll);
 }
 
 
