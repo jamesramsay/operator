@@ -1,5 +1,6 @@
 *README*
 .git/*
+athena/*
 test/*
 .env
 context.json
