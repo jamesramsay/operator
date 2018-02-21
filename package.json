@@ -14,6 +14,7 @@
     "v": "node -p 'require(\"./package.json\").version'",
     "publish": "npm run pkg:zip && ./publish.sh",
     "pkg:zip": "rm -f lambda.zip && zip -qyr lambda.zip . -x@.lambdaignore",
+    "athena:init": "docker run --rm vladnem/athena-workbench -url=jdbc:awsathena://athena.${npm_config_region}.amazonaws.com:443 -connectionProperties='s3_staging_dir=s3://${npm_config_bucket}' -username=$(aws configure get aws_access_key_id) -password=$(aws configure get aws_secret_access_key) -command=\"`cat athena/init.sql`\"",
     "lambda:update": "npm run pkg:zip && aws lambda update-function-code --function-name ${STACK:-operator}-dump --zip-file fileb://lambda.zip",
     "stack:update": "aws cloudformation update-stack --stack-name ${STACK:-operator} --template-body file://operator.template --capabilities CAPABILITY_IAM --parameters ParameterKey=Version,ParameterValue=$(npm run -s v) ParameterKey=IntercomAccessToken,UsePreviousValue=True ParameterKey=BucketName,UsePreviousValue=True",
     "stack:status": "aws cloudformation describe-stacks --stack-name ${STACK:-operator} --query 'Stacks[0].StackStatus'"

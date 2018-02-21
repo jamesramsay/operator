@@ -47,6 +47,12 @@
         "BucketName": {"Ref": "BucketName"}
       }
     },
+    "QueryResults": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {"Fn::Join": ["", [{"Ref": "BucketName"}, "-query-results"]]}
+      }
+    },
     "DumpRule": {
       "Type": "AWS::Events::Rule",
       "Properties": {
